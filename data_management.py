@@ -50,9 +50,9 @@ def Retrieve_file(file_name):
         print(item)
 
 def Update_file(types, which_file_changed, new_filename):
-    if types == 0:
+    if types == '0':
         cur.execute(f"UPDATE file SET name = '{new_filename}' WHERE name = '{which_file_changed}'")
-    elif types == 1:
+    elif types == '1':
         cur.execute(f"UPDATE file SET new_name = '{new_filename}' WHERE name = '{which_file_changed}'")
     print(which_file_changed + " -> " + new_filename)
 
