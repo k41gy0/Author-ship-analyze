@@ -3,6 +3,7 @@ import os
 
 con = sqlite3.connect('data.db')
 cur = con.cursor()
+encoding = 'Windows-1254'
 
 def Initialization():
 	cur.execute('''CREATE TABLE IF NOT EXISTS file (
@@ -31,7 +32,7 @@ def Create_file(path, types):
 		new_name = 'K' + Count_K_files()
 
 
-	f = open(path)
+	f = open(path, encoding=encoding, errors='ignore')
 	doc = f.read()
 	f.close()
 
@@ -50,9 +51,9 @@ def Retrieve_file(file_name):
         print(item)
 
 def Update_file(types, which_file_changed, new_filename):
-    if types == '0':
+    if types == 0:
         cur.execute(f"UPDATE file SET name = '{new_filename}' WHERE name = '{which_file_changed}'")
-    elif types == '1':
+    elif types == 1:
         cur.execute(f"UPDATE file SET new_name = '{new_filename}' WHERE name = '{which_file_changed}'")
     print(which_file_changed + " -> " + new_filename)
 
@@ -64,7 +65,7 @@ def Delete_file(file_name):
      print('Success!')
   
 
-def main():
+def datamanagement():
     try:
         while True:
             mode = input("1.Create files\n2.Retrieve files\n3.Update files\n4.Delete files\n5.Exit\n")
@@ -105,5 +106,5 @@ def main():
 
 if __name__ == "__main__":
 	Initialization()
-	main()
+	datamanagement()
 	Cleanup()
