@@ -1,6 +1,7 @@
 import data_management
 import search
 import comparison
+import consistency
 
 def main():
     while True:
@@ -17,6 +18,10 @@ def main():
             comparison.Initialization()
             comparison.comparisonTab()
             comparison.Cleanup()
+        elif(int(mode) == 4):
+            consistency.Initialization()
+            consistency.consistency()
+            consistency.Cleanup()
     
 
 if __name__ == '__main__':

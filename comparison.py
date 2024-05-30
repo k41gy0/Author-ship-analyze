@@ -44,10 +44,52 @@ def display_header(TextData,max_cols,row):
     for i in range(len(TextData)):
         empty = int(max_cols[i]/2)
         print(" "*empty,end="")
-        print("<"+row[i][1]+">",end="")
+        print("<"+TextData[i][1]+">",end="")
         print(" "*(empty-1),end="")
     print()
     
+    # return list type
+def make_Q_list(text_file): # taple -> list -> set
+    Q_list = []
+    text = text_file[0].split() #list
+    words = set(text)    #set
+    
+    for word in words:
+        count = count_word(text,word)
+        Q_list.append(WordCount(word=word,count=count))
+        
+    Q_list.sort(key=lambda x: x.count,reverse=True)
+    return (Q_list, "Q")
+
+def count_word(data_file,word):
+    count = 0
+    for item in data_file:
+        if word == item:
+            count += 1
+    return count
+     
+def has_Q(row):
+    for name in row:
+        if name[1] == 'Q':
+            return name
+    return False
+
+def isQ_text(text):
+    if text[1] == "Q":
+        return True
+    else:
+        return False
+    
+def make_Kn_list(Q_list, text):
+    Kn = []
+    word_list_Kn = text[0].split()
+    name_Kn = text[1]
+    for item in Q_list:
+        word = item.word
+        count = count_word(word_list_Kn,word)
+        Kn.append(WordCount(word=word,count=count))
+    return (Kn,name_Kn)
+
     
 def comparisonTab():    
     try:
@@ -62,39 +104,36 @@ def comparisonTab():
         cur.execute("SELECT doc, new_name FROM file")
         row = cur.fetchall()
         number_row = len(row)
-        TextData = [[] for i in range(number_row)]
+        TextData = []
         
-        i = -1
-        for text_file in row:
-            i += 1   #index for TextData[i]
-            pre_list_word_list = text_file[0].split()
-            word_list = set(text_file[0].split())
-            for word in word_list:
-                word_count = searchWord(word,pre_list_word_list)
-                TextData[i].append(WordCount(word=word,count=word_count))
-                
-        for data in TextData: #sort focus on word count
-            data.sort(key=lambda x: x.count,reverse=True)
+        Q_list = has_Q(row)
+        if Q_list == False: #there is no Q 
+            print("!!! There is no Q file !!!\nPlease create Q file!!\n>")
+            return False
+        
+        Q_list = make_Q_list(Q_list)
+        TextData.append(Q_list)
+     #TextData[Q~Kn][]
+        
+        #compute how much each text_file has specific word.
+        for text in row:
+            if isQ_text(text) == False:
+                TextData.append(make_Kn_list(Q_list[0], text))
+        #print(TextData[0][1][0],TextData[1][1],TextData[2][1])
         
         max_cols = []
-        for word_list in TextData: #calc for table
-            max_cols.append(get_max_col(word_list))
+        for word_list in TextData:
+            max_cols.append(get_max_col(word_list[0]))
             
         display_header(TextData,max_cols,row)
-        
-        min_range = 100000
-        for item in TextData:
-            L = len(item)
-            if L < min_range:
-                min_range = L
-                
-        for display_number in range(min_range):
+      
+        for display_number in range(len(TextData[0][0])):
             print("|",end="")
             for i in range(len(TextData)):
-                print(TextData[i][display_number].word,end="")
-                number_empty = max_cols[i] - len(TextData[i][display_number].word)-len(str(TextData[i][display_number].count))
-                print(" " * number_empty ,end="")
-                print(str(TextData[i][display_number].count)+ " | ",end="")
+                print(TextData[i][0][display_number].word,end="")
+                number_empty = max_cols[i] - len(TextData[i][0][display_number].word) - len(str(TextData[i][0][display_number].count))
+                print(" "*number_empty, end="")
+                print(str(TextData[i][0][display_number].count)+" | ",end="")
             print()
             if (display_number+1)%20 == 0:
                 enter = input("Please enter to continue.\nenter \"q\" if not continue\n>")
@@ -102,7 +141,7 @@ def comparisonTab():
                     display_header(TextData,max_cols,row)
                 else:
                     break
-            
+
     
     
     except KeyboardInterrupt:
