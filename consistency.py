@@ -31,6 +31,8 @@ def create_comparison_table(sorted_word_occurrences, filenames):
     for i, label in enumerate(filenames):
         data[label] = [item[1][i] if item[1][i] > 0 else '-' for item in sorted_word_occurrences]
 
+    data['Topology'] = [sum(1 for count in item[1] if count > 0) for item in sorted_word_occurrences]
+
     df = pd.DataFrame(data)
     return df
 
@@ -75,10 +77,6 @@ def consistency():
     pd.set_option('display.expand_frame_repr', False)
 
     display_in_chunks(table, 20)
-
-    
-
-
 
 
 
