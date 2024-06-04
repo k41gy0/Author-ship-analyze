@@ -1,4 +1,5 @@
 import sqlite3
+import pandas as pd
 from dataclasses import dataclass
 
 @dataclass
@@ -90,6 +91,25 @@ def make_Kn_list(Q_list, text):
         Kn.append(WordCount(word=word,count=count))
     return (Kn,name_Kn)
 
+def make_dataFrame(TextData):
+    data = {}
+    for file in TextData:
+        array = []
+        counts = [wc.count for wc in file[0]]
+        words = [wc.word for wc in file[0]]
+        for i in range(len(counts)):
+            if counts[i] == 0:
+                counts[i] = "-"
+           
+        array.append(words)
+        array.append(counts)
+        if file[1] == "Q":
+            data[file[1]] = words
+        else:
+            data[file[1]] = counts
+        
+    return data    
+    
     
 def comparisonTab():    
     try:
@@ -121,26 +141,15 @@ def comparisonTab():
                 TextData.append(make_Kn_list(Q_list[0], text))
         #print(TextData[0][1][0],TextData[1][1],TextData[2][1])
         
-        max_cols = []
-        for word_list in TextData:
-            max_cols.append(get_max_col(word_list[0]))
-            
-        display_header(TextData,max_cols,row)
-      
-        for display_number in range(len(TextData[0][0])):
-            print("|",end="")
-            for i in range(len(TextData)):
-                print(TextData[i][0][display_number].word,end="")
-                number_empty = max_cols[i] - len(TextData[i][0][display_number].word) - len(str(TextData[i][0][display_number].count))
-                print(" "*number_empty, end="")
-                print(str(TextData[i][0][display_number].count)+" | ",end="")
-            print()
-            if (display_number+1)%20 == 0:
-                enter = input("Please enter to continue.\nenter \"q\" if not continue\n>")
-                if enter != "q":
-                    display_header(TextData,max_cols,row)
-                else:
-                    break
+        df = make_dataFrame(TextData)
+        df = pd.DataFrame(df)
+        for i in range(0, len(df), 20):
+            print(df.iloc[i:i+20])
+            print("=============================================================")
+            x = input("Please enter to continue.\nIf not continue input \"q\".\n>")
+            if x == "q":
+                break
+            print("=============================================================")
 
     
     
