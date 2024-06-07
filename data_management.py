@@ -42,9 +42,9 @@ def Create_file(path, types):
 
 def Retrieve_file(file_name):
     if file_name != "*":
-        cur.execute(f"SELECT * FROM file WHERE name = '{file_name}'")
+        cur.execute(f"SELECT * FROM file WHERE new_name = '{file_name}'")
     else:
-        cur.execute("SELECT * FROM file")
+        cur.execute("SELECT name, new_name FROM file")
 
     row = cur.fetchall()
     for item in row:
@@ -81,7 +81,7 @@ def datamanagement():
             elif int(mode) == 3:
                 types = input("Please input the type\noriginal file name 0:\nnew file name 1:\n")
                 print("\n\n")
-                cur.execute("SELECT * FROM file")
+                cur.execute("SELECT name, new_name FROM file")
                 list = cur.fetchall()
                 for item in list:
                     print(item)
